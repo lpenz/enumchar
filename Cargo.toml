@@ -1,7 +1,15 @@
 [package]
 name = "enumchar"
+description = "Rust derive macro for enums where each variant is represented by a single char"
 version = "0.1.0"
+authors = ["Leandro Lisboa Penz <lpenz@lpenz.org>"]
 edition = "2021"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/lpenz/enumchar"
+repository = "https://github.com/lpenz/enumchar"
+categories = ["development-tools", "parsing"]
+keywords = ["enum", "char", "parse"]
 
 [lib]
 proc-macro = true
