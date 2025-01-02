@@ -4,16 +4,20 @@
 
 use enumchar::EnumChar;
 
-#[derive(EnumChar, Default)]
-pub enum Cell {
+#[derive(EnumChar, Default, Debug, PartialEq, Eq)]
+pub enum ECAllVariants {
     #[default]
     #[char('#')]
     Wall,
     #[char('.')]
     Empty,
+    Other,
 }
 
 #[test]
-pub fn test_tryfrom_char() {
-    let _c = Cell::try_from('.').expect("try_from to work");
+pub fn test_tryfrom_char() -> Result<(), String> {
+    assert_eq!(ECAllVariants::try_from('.')?, ECAllVariants::Empty);
+    assert_eq!(ECAllVariants::try_from('#')?, ECAllVariants::Wall);
+    assert!(matches!(ECAllVariants::try_from('z'), Err(_)));
+    Ok(())
 }
