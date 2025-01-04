@@ -33,13 +33,13 @@ fn variantdata_get(dataenum: &syn::DataEnum) -> Result<Vec<VariantData>, syn::Er
             let syn::Expr::Lit(lit) = expr else {
                 return Err(syn::Error::new(
                     ident.span(),
-                    "variant has invalid EnumChar char type",
+                    format!("variant {} has invalid EnumChar char type", ident),
                 ));
             };
             let syn::Lit::Char(c) = lit.lit else {
                 return Err(syn::Error::new(
                     ident.span(),
-                    "variant has invalid EnumChar char type",
+                    format!("variant {} has invalid EnumChar char type", ident),
                 ));
             };
             Ok::<VariantData, syn::Error>(VariantData {

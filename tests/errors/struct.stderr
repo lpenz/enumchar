@@ -1,0 +1,11 @@
+error: EnumChar can only be used with enums
+ --> tests/errors/struct.rs:8:12
+  |
+8 | pub struct S {}
+  |            ^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/errors/struct.rs:8:16
+  |
+8 | pub struct S {}
+  |                ^ consider adding a `main` function to `$DIR/tests/errors/struct.rs`

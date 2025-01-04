@@ -1,0 +1,11 @@
+error: variant Sum has invalid EnumChar char type
+  --> tests/errors/invalid_expr_type.rs:10:5
+   |
+10 |     Sum,
+   |     ^^^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/errors/invalid_expr_type.rs:11:2
+   |
+11 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/errors/invalid_expr_type.rs`

@@ -1,0 +1,11 @@
+error: EnumChar variants Dot2 and Dot1 using the same char .
+  --> tests/errors/repeatchar.rs:12:5
+   |
+12 |     Dot2,
+   |     ^^^^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/errors/repeatchar.rs:13:2
+   |
+13 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/errors/repeatchar.rs`
