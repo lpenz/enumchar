@@ -12,13 +12,13 @@ use syn::Expr;
 #[proc_macro_derive(EnumChar, attributes(char))]
 pub fn derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    let name = input.ident;
-    let variants = if let Data::Enum(ref data) = input.data {
-        data.variants.clone()
-    } else {
-        Default::default()
+    let Data::Enum(ref dataenum) = input.data else {
+        return syn::Error::new(input.ident.span(), "EnumChar can only be used with enums")
+            .to_compile_error()
+            .into();
     };
-    let tryfrom_matches = variants.iter().filter_map(|variant| {
+    let name = input.ident;
+    let tryfrom_matches = dataenum.variants.iter().filter_map(|variant| {
         let chareq = variant.attrs.iter().find_map(|attr| {
             if !attr.path().is_ident("char") {
                 return None;
