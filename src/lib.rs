@@ -2,6 +2,9 @@
 // This file is subject to the terms and conditions defined in
 // file 'LICENSE', which is part of this source code package.
 
+#![deny(rustdoc::broken_intra_doc_links)]
+#![doc = include_str!("../doc.md")]
+
 use quote::quote;
 use std::collections::HashMap;
 use syn::parse_macro_input;
@@ -213,6 +216,13 @@ fn my_derive(input: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> 
     Ok(expanded)
 }
 
+/// The `EnumChar` derive macro allows the usage of the `char`
+/// attribute to define an equivalent character for each enum
+/// variant. The macro then automatically creates `TryFrom<char>`,
+/// `TryInto<char>`, `std::fmt::Display` and other default `impl`.
+///
+/// See also the top-level [crate documentation](crate) for more
+/// information and examples.
 #[proc_macro_derive(EnumChar, attributes(char))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as syn::DeriveInput);
