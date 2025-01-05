@@ -1,0 +1,9 @@
+error[E0277]: the trait bound `char: From<E>` is not satisfied
+  --> tests/errors/from_char_incomplete_variants.rs:15:13
+   |
+15 |     let _ = char::from(E::Dot);
+   |             ^^^^ the trait `From<E>` is not implemented for `char`
+   |
+   = help: the following other types implement trait `From<T>`:
+             `char` implements `From<Char>`
+             `char` implements `From<u8>`

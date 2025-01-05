@@ -17,6 +17,11 @@ pub fn test_allvariants_tryfrom_char() -> Result<(), String> {
     assert_eq!(ECAllVariants::try_from('.')?, ECAllVariants::Empty);
     assert_eq!(ECAllVariants::try_from('#')?, ECAllVariants::Wall);
     assert!(matches!(ECAllVariants::try_from('z'), Err(_)));
+    assert_eq!(char::try_from(ECAllVariants::Empty), Ok('.'));
+    assert_eq!(char::try_from(ECAllVariants::Wall), Ok('#'));
+    // As we have defined all enums, we also get char::from
+    assert_eq!(char::from(ECAllVariants::Empty), '.');
+    assert_eq!(char::from(ECAllVariants::Wall), '#');
     Ok(())
 }
 
@@ -34,5 +39,8 @@ pub fn test_somevariants_tryfrom_char() -> Result<(), String> {
     assert_eq!(ECSomeVariants::try_from('.')?, ECSomeVariants::Empty);
     assert_eq!(ECSomeVariants::try_from('#')?, ECSomeVariants::Wall);
     assert!(matches!(ECSomeVariants::try_from('z'), Err(_)));
+    assert_eq!(char::try_from(ECSomeVariants::Empty), Ok('.'));
+    assert_eq!(char::try_from(ECSomeVariants::Wall), Ok('#'));
+    assert!(matches!(char::try_from(ECSomeVariants::Other), Err(_)));
     Ok(())
 }
