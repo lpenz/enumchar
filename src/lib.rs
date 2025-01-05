@@ -104,23 +104,34 @@ fn tryfrom_char_gen(topid: &Ident, vdata: &[VariantData]) -> proc_macro2::TokenS
 
 fn tryinto_char_gen(topid: &Ident, vdata: &[VariantData]) -> proc_macro2::TokenStream {
     // If there's a variant without char, we create a TryFrom impl
-    let tryfrom_enum_matches = vdata.iter().map(|vd| {
-        let ident = &vd.ident;
-        if let Some(chareq) = vd.varchar {
-            Some(quote! {
-                #topid::#ident => Ok(#chareq),
-            })
-        } else {
-            let errmsg = format!("variant {}::{} has no char representation", topid, ident);
-            Some(quote! {
-                #topid::#ident => Err(#errmsg.to_string())
-            })
-        }
-    });
+    let tryfrom_enum_matches = vdata
+        .iter()
+        .map(|vd| {
+            let ident = &vd.ident;
+            if let Some(chareq) = vd.varchar {
+                Some(quote! {
+                    #topid::#ident => Ok(#chareq),
+                })
+            } else {
+                let errmsg = format!("variant {}::{} has no char representation", topid, ident);
+                Some(quote! {
+                    #topid::#ident => Err(#errmsg.to_string())
+                })
+            }
+        })
+        .collect::<Vec<_>>();
     quote! {
         impl TryFrom<#topid> for char {
             type Error = String;
             fn try_from(e: #topid) -> Result<Self, Self::Error> {
+                match e {
+                    #(#tryfrom_enum_matches)*
+                }
+            }
+        }
+        impl TryFrom<&#topid> for char {
+            type Error = String;
+            fn try_from(e: &#topid) -> Result<Self, Self::Error> {
                 match e {
                     #(#tryfrom_enum_matches)*
                 }
@@ -131,19 +142,40 @@ fn tryinto_char_gen(topid: &Ident, vdata: &[VariantData]) -> proc_macro2::TokenS
 
 fn into_char_gen(topid: &Ident, vdata: &[VariantData]) -> proc_macro2::TokenStream {
     // If all variants have chars, we can just impl From
-    let from_enum_matches = vdata.iter().map(|vd| {
-        let ident = &vd.ident;
-        let chareq = vd.varchar;
-        quote! {
-            #topid::#ident => #chareq,
-        }
-    });
+    let from_enum_matches = vdata
+        .iter()
+        .map(|vd| {
+            let ident = &vd.ident;
+            let chareq = vd.varchar;
+            quote! {
+                #topid::#ident => #chareq,
+            }
+        })
+        .collect::<Vec<_>>();
     quote! {
         impl From<#topid> for char {
             fn from(e: #topid) -> Self {
                 match e {
                     #(#from_enum_matches)*
                 }
+            }
+        }
+        impl From<&#topid> for char {
+            fn from(e: &#topid) -> Self {
+                match e {
+                    #(#from_enum_matches)*
+                }
+            }
+        }
+    }
+}
+
+fn display_gen(topid: &Ident) -> proc_macro2::TokenStream {
+    quote! {
+        impl std::fmt::Display for #topid {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let c = char::try_from(self).map_err(|_| std::fmt::Error)?;
+                write!(f, "{}", c)
             }
         }
     }
@@ -167,9 +199,15 @@ fn my_derive(input: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> 
     } else {
         into_char_gen(topid, &vdata)
     };
+    let display_code = if !has_variant_without_char(dataenum) {
+        display_gen(topid)
+    } else {
+        quote! {}
+    };
     let expanded = quote! {
         #tryfrom_char_code
         #into_char_code
+        #display_code
     };
     // eprintln!("{}", expanded);
     Ok(expanded)

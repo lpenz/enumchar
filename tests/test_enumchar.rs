@@ -22,6 +22,7 @@ pub fn test_allvariants_tryfrom_char() -> Result<(), String> {
     // As we have defined all enums, we also get char::from
     assert_eq!(char::from(ECAllVariants::Empty), '.');
     assert_eq!(char::from(ECAllVariants::Wall), '#');
+    assert_eq!(format!("{}", ECAllVariants::Wall), "#");
     Ok(())
 }
 
