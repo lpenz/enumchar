@@ -184,6 +184,28 @@ fn display_gen(topid: &Ident) -> proc_macro2::TokenStream {
     }
 }
 
+fn fromstr_gen(topid: &Ident, vdata: &[VariantData]) -> proc_macro2::TokenStream {
+    let fromstr_matches = vdata.iter().filter_map(|vd| {
+        let ident = &vd.ident;
+        let chareq = vd.varchar?.to_string();
+        Some(quote! {
+            #chareq => Ok(#topid::#ident),
+        })
+    });
+    let errmsg = format!("unable to parse str into {}", topid);
+    quote! {
+        impl std::str::FromStr for #topid {
+            type Err = String;
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                match s {
+                    #(#fromstr_matches)*
+                    _ => Err(format!(#errmsg))
+                }
+            }
+        }
+    }
+}
+
 fn my_derive(input: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     // eprintln!("{:#?}", input);
     let syn::Data::Enum(ref dataenum) = input.data else {
@@ -207,10 +229,12 @@ fn my_derive(input: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> 
     } else {
         quote! {}
     };
+    let fromstr_code = fromstr_gen(topid, &vdata);
     let expanded = quote! {
         #tryfrom_char_code
         #into_char_code
         #display_code
+        #fromstr_code
     };
     // eprintln!("{}", expanded);
     Ok(expanded)
