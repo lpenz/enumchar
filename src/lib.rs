@@ -7,10 +7,10 @@
 
 use quote::quote;
 use std::collections::HashMap;
-use syn::parse_macro_input;
 use syn::Error;
 use syn::Ident;
 use syn::Result;
+use syn::parse_macro_input;
 
 struct VariantData {
     pub ident: Ident,
