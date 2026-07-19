@@ -24,6 +24,14 @@ pub fn test_allvariants_tryfrom_char() -> Result<(), String> {
     // As we have defined all enums, we also get char::from
     assert_eq!(char::from(ECAllVariants::Empty), '.');
     assert_eq!(char::from(ECAllVariants::Wall), '#');
+    // by-ref infallible conversion
+    let wall = ECAllVariants::Wall;
+    assert_eq!(char::from(&wall), '#');
+    let empty = ECAllVariants::Empty;
+    assert_eq!(char::from(&empty), '.');
+    // by-ref fallible conversion
+    assert_eq!(char::try_from(&wall), Ok('#'));
+    assert_eq!(char::try_from(&empty), Ok('.'));
     assert_eq!(format!("{}", ECAllVariants::Wall), "#");
     Ok(())
 }
@@ -47,5 +55,13 @@ pub fn test_somevariants_tryfrom_char() -> Result<(), String> {
     assert_eq!(char::try_from(ECSomeVariants::Empty), Ok('.'));
     assert_eq!(char::try_from(ECSomeVariants::Wall), Ok('#'));
     assert!(matches!(char::try_from(ECSomeVariants::Other), Err(_)));
+    // by-ref fallible conversion
+    let wall = ECSomeVariants::Wall;
+    assert_eq!(char::try_from(&wall), Ok('#'));
+    let other = ECSomeVariants::Other;
+    assert!(matches!(char::try_from(&other), Err(_)));
+    // FromStr for incomplete enum
+    assert_eq!("#".parse::<ECSomeVariants>()?, ECSomeVariants::Wall);
+    assert!(matches!("".parse::<ECSomeVariants>(), Err(_)));
     Ok(())
 }
